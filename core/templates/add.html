@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block body %}
+  <div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
+  <h1 class="text-2xl font-bold mb-6 text-gray-800">录入新学生</h1>
+  <form action="{{ url_for('main.add_student') }}" method="POST" class="space-y-4">
+      <div>
+          <label class="block text-sm font-medium text-gray-700">姓名</label>
+          <input type="text" name="name" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+      </div>
+      <div>
+          <label class="block text-sm font-medium text-gray-700">学号</label>
+          <input type="text" name="student_id" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+      </div>
+      <div>
+          <label class="block text-sm font-medium text-gray-700">班级</label>
+          <input type="text" name="class_name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+      </div>
+      <div class="flex justify-between items-center mt-6">
+          <a href="{{ url_for('main.index') }}" class="text-gray-600 hover:underline">取消</a>
+          <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">保存信息</button>
+      </div>
+  </form>
+  </div>
+{% endblock %}
