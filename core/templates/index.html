@@ -1,70 +1,112 @@
 {% extends "layout.html" %}
 
 {% block body %}
-    <div class="max-w-5xl mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-2xl">
-        <!-- 闪现消息提示 -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="mb-4 p-4 rounded-lg {% if category == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
-                {{ message }}
-              </div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <!-- 闪现消息提示 -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="mb-6 p-4 rounded-2xl border flex items-center gap-3 shadow-sm {% if category == 'success' %}bg-green-50 border-green-200 text-green-700{% else %}bg-red-50 border-red-200 text-red-700{% endif %}">
+            <span class="font-medium">{{ message }}</span>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
 
-        <div class="flex justify-between items-center mb-8">
+    <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-xl border border-gray-100">
+        <!-- 标题与操作区 -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
             <div>
-                <h1 class="text-3xl font-extrabold text-indigo-700">{{ title }}</h1>
-                <p class="text-gray-600">监控每一只潜伏在你身边的卷狗。</p>
+                <h1 class="text-3xl font-black text-gray-900 tracking-tight">{{ title or "卷王观测站" }}</h1>
+                <p class="text-gray-500 mt-1">即时监控每一位潜伏在你身边的卷王 🐕</p>
             </div>
-            <a href="{{ url_for('main.add_student') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition shadow-md">
-                + 录入新成员
-            </a>
+            <div class="flex flex-wrap gap-3">
+                <a href="{{ url_for('main.add_student') }}"
+                   class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-2xl font-bold transition shadow-lg shadow-indigo-100 active:transform active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    录入新卷王
+                </a>
+            </div>
         </div>
 
-        <!-- 学生列表 -->
-        <div class="overflow-hidden border border-gray-200 rounded-lg shadow-sm">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">姓名</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">学号</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">班级</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">头衔</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">操作</th>
+        <!-- 卷王列表表格 -->
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-gray-400 text-xs uppercase tracking-widest border-b border-gray-50">
+                        <th class="px-6 py-4 font-black">基本信息</th>
+                        <th class="px-6 py-4 font-black">当前头衔</th>
+                        <th class="px-6 py-4 font-black text-center">所属班级</th>
+                        <th class="px-6 py-4 font-black text-center">状态</th>
+                        <th class="px-6 py-4 font-black text-right">操作</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="divide-y divide-gray-50">
                     {% for student in students %}
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ student.name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ student.student_id }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ student.class_name or '未知' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">
-                                {{ student.title or '普通同学' }}
+                    <tr class="group hover:bg-gray-50/50 transition cursor-pointer"
+                        onclick="window.location.href='{{ url_for('main.edit_student', id=student.student_id) }}'">
+                        <td class="px-6 py-5">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center font-black text-lg group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                                    {{ student.name[0] if student.name else '?' }}
+                                </div>
+                                <div>
+                                    <div class="text-gray-900 font-bold">{{ student.name }}</div>
+                                    <div class="text-gray-400 text-xs font-mono">ID: {{ student.student_id }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-5">
+                            <span class="text-gray-600 italic">
+                                {% if student.title %}
+                                    "{{ student.title }}"
+                                {% else %}
+                                    <span class="text-gray-300 text-sm">暂无头衔</span>
+                                {% endif %}
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
-                            <!-- 编辑按钮 -->
-                            <a href="{{ url_for('main.edit_student', id=student.student_id) }}" class="text-indigo-600 hover:text-indigo-900">编辑</a>
-
-                            <!-- 删除按钮 (使用表单以确保 POST 安全) -->
-                            <form action="{{ url_for('main.delete_student', id=student.student_id) }}" method="POST" class="inline">
-                                <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('确定要销毁这只卷狗的记录吗？')">删除</button>
-                            </form>
+                        <td class="px-6 py-5 text-center">
+                            <span class="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                                {{ student.class_name or '未归类' }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-5 text-center">
+                            <span class="inline-flex items-center gap-1.5 text-green-500 text-xs font-black bg-green-50 px-3 py-1.5 rounded-full">
+                                <span class="h-2 w-2 bg-green-500 rounded-full animate-pulse"></span> 在卷
+                            </span>
+                        </td>
+                        <td class="px-6 py-5 text-right" onclick="event.stopPropagation();">
+                            <div class="flex justify-end gap-2">
+                                <a href="{{ url_for('main.edit_student', id=student.student_id) }}"
+                                   class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition"
+                                   title="详情/编辑">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                </a>
+                                <form action="{{ url_for('main.delete_student', id=student.student_id) }}" method="POST" class="inline">
+                                    <button type="submit" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition"
+                                            onclick="return confirm('确定要销毁记录吗？')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-20 text-center">
+                            <p class="text-gray-400">目前暂无卷王监控目标...</p>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-
-        {% if not students %}
-        <div class="text-center py-12">
-            <p class="text-gray-500 italic">目前还没有发现卷狗，世界暂时很安全。</p>
-        </div>
-        {% endif %}
     </div>
+</div>
 {% endblock %}
