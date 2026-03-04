@@ -113,10 +113,19 @@ def delete_student(id):
 
 @bp.route('/delete_skill/<s_id>/<p_id>')
 def delete_skill(s_id, p_id):
-    """删除某项特定技能"""
-    sp = db.session.get(StudentPower, (s_id, p_id))
+    '''删除技能'''
+    sp = db.session.execute(
+        select(StudentPower).filter_by(student_id=s_id, power_id=p_id)
+    ).scalar_one_or_none()
+
     if sp:
-        db.session.delete(sp)
-        db.session.commit()
-        flash("技能已重置", "success")
+        try:
+            db.session.delete(sp)
+            db.session.commit()
+            flash("该卷王已“由于不可抗力”丢失了这项技能", "success")
+        except Exception as e:
+            db.session.rollback()
+            flash("技能删除失败", "error")
+    else:
+        flash("未找到对应的技能记录", "error")
     return redirect(url_for('main.edit_student', id=s_id, tab='skills'))

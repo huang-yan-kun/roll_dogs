@@ -4,7 +4,7 @@ from core import create_app
 app = create_app()
 
 if __name__ == '__main__':
-    print("Rolldogs 卷狗管理程序正在啟動...")
+    print("Rolldogs 卷狗管理程序正在启动...")
     print("---------------------------------------")
     print(f"数据库路径（SQLite）：[您的根目录]/instance/rolldogs.db")
     print("请访问：http://127.0.0.1:5000/")

@@ -41,11 +41,11 @@ class Power(db.Model):
 
 # 4. 学生技能关联表
 class StudentPower(db.Model):
-    __tablename__ = 's_power'
+    __tablename__ = 'student_power'
 
-    student_id = db.Column(db.String(10), db.ForeignKey('roll_dog.student_id'), primary_key=True)
-    power_id = db.Column(db.String(4), db.ForeignKey('power.power_id'), primary_key=True)
-    level = db.Column(db.String(10))
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    student_id = db.Column(db.String(10), db.ForeignKey('roll_dog.student_id'), nullable=False)
+    power_id = db.Column(db.String(4), db.ForeignKey('power.power_id'), nullable=False)
+    level = db.Column(db.Integer, default=50)
 
-    # 关联到技能详情
-    power_info = db.relationship('Power')
+    power = db.relationship('Power', backref='student_links')
